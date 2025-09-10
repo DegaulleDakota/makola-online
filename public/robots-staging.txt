@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /
+
+# Block all crawlers on staging
+# This prevents staging content from being indexed

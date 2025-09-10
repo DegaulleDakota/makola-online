@@ -1,0 +1,72 @@
+# DigitalOcean App Platform - Production Configuration
+name: makola-online-prod
+region: nyc
+
+services:
+- name: web
+  source_dir: /
+  build_command: npm ci && npm run build
+  run_command: npm run preview
+  environment_slug: node-js
+  instance_count: 1
+  instance_size_slug: basic-xxs
+  http_port: 3000
+  routes:
+  - path: /
+  envs:
+  - key: NODE_ENV
+    value: production
+  - key: ADMIN_SUPER_EMAIL
+    value: dukesnr@yahoo.co.uk
+  - key: ADMIN_WHATSAPP_NUMBER
+    value: "0558271127"
+  - key: APP_BASE_URL
+    value: https://makolaonline.com
+  - key: VITE_ADMIN_PASSWORD
+    value: Makola2025!
+  - key: PLATFORM_COMMISSION_PERCENT
+    value: "10"
+  - key: MINIMUM_PAYOUT_AMOUNT
+    value: "20"
+  - key: VODAFONE_MOMO_API_KEY
+    value: ${VODAFONE_MOMO_API_KEY}
+  - key: VODAFONE_MOMO_SECRET
+    value: ${VODAFONE_MOMO_SECRET}
+  - key: VODAFONE_MOMO_WEBHOOK_SECRET
+    value: ${VODAFONE_MOMO_WEBHOOK_SECRET}
+
+static_sites:
+- name: frontend
+  source_dir: /
+  build_command: npm ci && npm run build
+  output_dir: dist
+  index_document: index.html
+  error_document: index.html
+  catchall_document: index.html
+  routes:
+  - path: /
+
+jobs:
+- name: daily-reminders
+  kind: CRON
+  schedule: "0 6 * * *"
+  run_command: node scripts/daily-reminders.js
+  environment_slug: node-js
+- name: hourly-cleanup
+  kind: CRON
+  schedule: "0 * * * *"
+  run_command: node scripts/hourly-cleanup.js
+  environment_slug: node-js
+
+domains:
+- domain: makolaonline.com
+  type: PRIMARY
+  zone: makolaonline.com
+- domain: www.makolaonline.com
+  type: ALIAS
+  zone: makolaonline.com
+
+alerts:
+- rule: DEPLOYMENT_FAILED
+- rule: DOMAIN_FAILED
+- rule: FUNCTIONS_ERROR_RATE_HIGH
