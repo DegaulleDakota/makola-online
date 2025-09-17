@@ -12,6 +12,7 @@ import { SoftLaunchBanner } from './SoftLaunchBanner';
 import { MaintenanceMode } from './MaintenanceMode';
 import { supabase } from '@/lib/supabase';
 import config from '@/config/environment';
+import { useNavigate } from 'react-router-dom';
 
 const AppLayout: React.FC = () => {
   const { sidebarOpen, toggleSidebar } = useAppContext();
@@ -20,8 +21,8 @@ const AppLayout: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState<any[]>([]);
+  const navigate = useNavigate();
 
-  // Load real products from database
   useEffect(() => {
     loadProducts();
   }, []);
@@ -50,7 +51,7 @@ const AppLayout: React.FC = () => {
         image: product.image_url || '/placeholder.svg',
         seller: product.sellers?.business_name || 'Unknown Seller',
         location: product.sellers?.location || 'Unknown Location',
-        rating: 4.5, // Default rating
+        rating: 4.5,
         isBoosted: product.is_boosted,
         isVerified: product.sellers?.is_verified,
         sellerId: product.seller_id,
@@ -60,7 +61,6 @@ const AppLayout: React.FC = () => {
       setProducts(formattedProducts);
     } catch (error) {
       console.error('Error loading products:', error);
-      // Fallback to mock data if database fails
       setProducts([
         {
           id: '1',
@@ -119,7 +119,6 @@ const AppLayout: React.FC = () => {
     return matchesCategory && matchesSearch;
   });
 
-  // Show maintenance mode if enabled
   if (config.maintenanceMode) {
     return <MaintenanceMode />;
   }
@@ -128,26 +127,27 @@ const AppLayout: React.FC = () => {
     <div className="min-h-screen bg-gray-50">
       <Header onMenuClick={toggleSidebar} />
       <SoftLaunchBanner />
+
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-emerald-600 to-emerald-800 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <h1 className="text-4xl lg:text-6xl font-bold mb-6">
-                Ghana's Premier Online Marketplace
+                Ghana&apos;s Premier Online Marketplace
               </h1>
               <p className="text-xl mb-8 text-emerald-100">
                 Buy and sell anything, anywhere in Ghana. Connect with verified sellers and get fast delivery.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <button 
-                  onClick={() => window.location.href = '/sell'}
+                  onClick={() => navigate('/sell')}
                   className="bg-white text-emerald-600 px-8 py-4 rounded-lg font-semibold hover:bg-emerald-50 transition-colors"
                 >
                   Start Selling 🛍️
                 </button>
                 <button 
-                  onClick={() => window.location.href = '/rider/register'}
+                  onClick={() => navigate('/rider/register')}
                   className="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-emerald-600 transition-colors"
                 >
                   Become a Rider 🚴
@@ -158,7 +158,7 @@ const AppLayout: React.FC = () => {
               <div className="relative">
                 <img 
                   src="/placeholder.svg" 
-                  alt="Makola Online Marketplace"
+                  alt="Everything Market Ghana Marketplace"
                   className="w-full h-96 object-cover rounded-lg shadow-2xl"
                 />
                 <div className="absolute -bottom-4 -left-4 bg-white p-4 rounded-lg shadow-lg">

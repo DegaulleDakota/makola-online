@@ -10,10 +10,10 @@ const Footer: React.FC = () => {
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center gap-2 mb-4">
               <ShoppingBag className="h-8 w-8 text-green-500" />
-              <h2 className="text-2xl font-bold">Makola Online</h2>
+              <h2 className="text-2xl font-bold">Everything Market Ghana</h2>
             </div>
             <p className="text-gray-300 mb-4">
-              Ghana's premier online marketplace connecting buyers and sellers across the country.
+              Ghana&apos;s premier online marketplace connecting buyers and sellers across the country.
             </p>
             <div className="space-y-2">
               <div className="flex items-center gap-2">
@@ -22,7 +22,7 @@ const Footer: React.FC = () => {
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="h-4 w-4 text-green-500" />
-                <span>support@makolaonline.com</span>
+                <span>support@everythingmarketghana.com</span>
               </div>
               <div className="flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-green-500" />
@@ -35,10 +35,10 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2">
-              <li><a href="#" className="text-gray-300 hover:text-white">About Us</a></li>
-              <li><a href="#" className="text-gray-300 hover:text-white">How It Works</a></li>
-              <li><a href="#" className="text-gray-300 hover:text-white">Sell on Makola</a></li>
-              <li><a href="#" className="text-gray-300 hover:text-white">Contact</a></li>
+              <li><a href="/about" className="text-gray-300 hover:text-white">About Us</a></li>
+              <li><a href="/how-it-works" className="text-gray-300 hover:text-white">How It Works</a></li>
+              <li><a href="/sell" className="text-gray-300 hover:text-white">Sell on EMG</a></li>
+              <li><a href="/contact" className="text-gray-300 hover:text-white">Contact</a></li>
             </ul>
           </div>
 
@@ -46,17 +46,17 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">Legal</h3>
             <ul className="space-y-2">
-              <li><a href="#" className="text-gray-300 hover:text-white">Terms of Use</a></li>
-              <li><a href="#" className="text-gray-300 hover:text-white">Privacy Policy</a></li>
-              <li><a href="#" className="text-gray-300 hover:text-white">Return Policy</a></li>
-              <li><a href="#" className="text-gray-300 hover:text-white">Help Center</a></li>
+              <li><a href="/terms" className="text-gray-300 hover:text-white">Terms of Use</a></li>
+              <li><a href="/privacy" className="text-gray-300 hover:text-white">Privacy Policy</a></li>
+              <li><a href="/returns" className="text-gray-300 hover:text-white">Return Policy</a></li>
+              <li><a href="/help" className="text-gray-300 hover:text-white">Help Center</a></li>
             </ul>
           </div>
         </div>
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-center">
           <p className="text-gray-300">
-            © 2025 Makola Online. All Rights Reserved.
+            © {new Date().getFullYear()} Everything Market Ghana. All Rights Reserved.
           </p>
         </div>
       </div>

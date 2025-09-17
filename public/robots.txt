@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://makolaonline.com/sitemap.xml
+Sitemap: https://everythingmarketghana.com/sitemap.xml
 
 # Disallow admin areas (if any)
 Disallow: /admin/
@@ -15,3 +15,5 @@ Allow: /terms
 Allow: /privacy
 Allow: /sell
 Allow: /add-product
+Allow: /help
+Allow: /return-policy

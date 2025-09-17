@@ -7,14 +7,14 @@ const Terms = () => {
           
           <div className="prose prose-gray max-w-none">
             <p className="text-sm text-gray-600 mb-6">
-              <strong>Effective Date:</strong> [Insert Date]<br />
-              <strong>Last Updated:</strong> [Insert Date]
+              <strong>Effective Date:</strong> January 1, 2025<br />
+              <strong>Last Updated:</strong> January 1, 2025
             </p>
 
             <section className="mb-8">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">1. Acceptance of Terms</h2>
               <p className="text-gray-700 mb-4">
-                By accessing and using Makola Online ("the Platform"), you agree to be bound by these Terms of Use. 
+                By accessing and using Everything Market Ghana ("the Platform"), you agree to be bound by these Terms of Use. 
                 If you do not agree to these terms, please do not use our services.
               </p>
             </section>
@@ -22,8 +22,8 @@ const Terms = () => {
             <section className="mb-8">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">2. Platform Description</h2>
               <p className="text-gray-700 mb-4">
-                Makola Online is an e-commerce marketplace that connects buyers and sellers in Ghana. 
-                We provide a platform for users to list, browse, and purchase products and services.
+                Everything Market Ghana is an e-commerce marketplace that connects buyers and sellers across Ghana. 
+                We provide a secure and convenient platform for users to list, browse, and purchase products and services.
               </p>
             </section>
 
@@ -33,7 +33,7 @@ const Terms = () => {
                 <li>Provide accurate and truthful information</li>
                 <li>Comply with all applicable laws and regulations</li>
                 <li>Respect other users and maintain professional conduct</li>
-                <li>Not engage in fraudulent or deceptive practices</li>
+                <li>Not engage in fraudulent, abusive, or deceptive practices</li>
               </ul>
             </section>
 
@@ -41,8 +41,8 @@ const Terms = () => {
               <h2 className="text-xl font-semibold text-gray-900 mb-4">4. Contact Information</h2>
               <p className="text-gray-700">
                 For questions about these Terms of Use, please contact us:<br />
-                WhatsApp: [Your WhatsApp Number]<br />
-                Email: [Your Support Email]
+                WhatsApp: +233-XXXXXXXXX<br />
+                Email: support@everythingmarketghana.com
               </p>
             </section>
           </div>

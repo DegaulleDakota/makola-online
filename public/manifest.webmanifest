@@ -1,7 +1,7 @@
 {
-  "name": "Makola Online - Ghana's Premier Marketplace",
-  "short_name": "Makola Online",
-  "description": "Ghana's premier online marketplace connecting buyers and sellers",
+  "name": "Everything Market Ghana - Buy & Sell Locally",
+  "short_name": "EMG",
+  "description": "Ghana's premier online marketplace connecting buyers and sellers across the country.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

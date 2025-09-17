@@ -30,7 +30,7 @@ export default function NotFound() {
             <ul className="text-left space-y-1">
               <li>• <Link to="/" className="text-green-600 hover:underline">Browse Products</Link></li>
               <li>• <Link to="/sell" className="text-green-600 hover:underline">Sell Your Items</Link></li>
-              <li>• <Link to="/about" className="text-green-600 hover:underline">About Makola</Link></li>
+              <li>• <Link to="/about" className="text-green-600 hover:underline">About Everything Market Ghana</Link></li>
             </ul>
           </div>
           
@@ -49,7 +49,7 @@ export default function NotFound() {
           
           <div className="pt-4 border-t">
             <p className="text-xs text-gray-400">
-              Makola Online - Ghana's Premier Marketplace
+              Everything Market Ghana — Ghana's Premier Marketplace
             </p>
           </div>
         </CardContent>

@@ -29,7 +29,7 @@ const SellerOnboarding: React.FC = () => {
   const { language } = useAppContext();
   const navigate = useNavigate();
   const t = languages[language];
-  
+
   const [formData, setFormData] = useState<SellerFormData>({
     businessName: '',
     phoneNumber: '',
@@ -42,14 +42,14 @@ const SellerOnboarding: React.FC = () => {
     deliveryCost: '',
     deliveryAreas: ''
   });
-  
+
   const [loading, setLoading] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
+
     try {
       // Create seller first
       const { data: seller, error: sellerError } = await supabase
@@ -66,15 +66,15 @@ const SellerOnboarding: React.FC = () => {
       if (sellerError) throw sellerError;
 
       // Upload image if provided
-      let imageUrl = null;
+      let imageUrl: string | null = null;
       if (imageFile) {
         const fileExt = imageFile.name.split('.').pop();
         const fileName = `${seller.id}-${Date.now()}.${fileExt}`;
-        
+
         const { error: uploadError } = await supabase.storage
           .from('product-images')
           .upload(fileName, imageFile);
-          
+
         if (!uploadError) {
           const { data } = supabase.storage
             .from('product-images')
@@ -100,21 +100,20 @@ const SellerOnboarding: React.FC = () => {
         });
 
       if (productError) throw productError;
-      if (productError) throw productError;
-      
+
       // Track successful registration with analytics
       const { trackEvent } = await import('@/hooks/useAnalytics');
       trackEvent('seller_registration', seller.id);
-      
+
       // Automatically log in the seller and redirect to dashboard
       setSellerSession({
         sellerId: seller.id,
         name: formData.businessName,
         whatsapp: formData.phoneNumber
       });
-      
-      alert('Registration successful! Welcome to Makola Online. You are now logged in and ready to start selling.');
-      
+
+      alert('Registration successful! Welcome to Everything Market Ghana. You are now logged in and ready to start selling.');
+
       // Track click-to-registration conversion
       const clickData = JSON.parse(localStorage.getItem('makola_start_selling_clicks') || '[]');
       const conversionData = {
@@ -124,12 +123,12 @@ const SellerOnboarding: React.FC = () => {
       };
       clickData.push(conversionData);
       localStorage.setItem('makola_start_selling_clicks', JSON.stringify(clickData));
-      
+
       // Short delay to show welcome message before redirect
       setTimeout(() => {
         navigate('/seller');
       }, 2000);
-      
+
     } catch (error) {
       console.error('Error:', error);
       alert('Registration failed. Please try again.');
@@ -150,24 +149,24 @@ const SellerOnboarding: React.FC = () => {
             <Input
               id="businessName"
               value={formData.businessName}
-              onChange={(e) => setFormData({...formData, businessName: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
               required
             />
           </div>
-          
+
           <div>
             <Label htmlFor="phoneNumber">{t.phoneNumber}</Label>
             <Input
               id="phoneNumber"
               value={formData.phoneNumber}
-              onChange={(e) => setFormData({...formData, phoneNumber: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
               required
             />
           </div>
 
           <div>
             <Label htmlFor="location">{t.location}</Label>
-            <Select onValueChange={(value) => setFormData({...formData, location: value})}>
+            <Select onValueChange={(value) => setFormData({ ...formData, location: value })}>
               <SelectTrigger>
                 <SelectValue placeholder="Select location" />
               </SelectTrigger>
@@ -195,14 +194,14 @@ const SellerOnboarding: React.FC = () => {
             <Input
               id="productName"
               value={formData.productName}
-              onChange={(e) => setFormData({...formData, productName: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, productName: e.target.value })}
               required
             />
           </div>
 
           <div>
             <Label htmlFor="category">{t.category}</Label>
-            <Select onValueChange={(value) => setFormData({...formData, category: value})}>
+            <Select onValueChange={(value) => setFormData({ ...formData, category: value })}>
               <SelectTrigger>
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
@@ -221,7 +220,7 @@ const SellerOnboarding: React.FC = () => {
               type="number"
               step="0.01"
               value={formData.price}
-              onChange={(e) => setFormData({...formData, price: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, price: e.target.value })}
               required
             />
           </div>
@@ -231,7 +230,7 @@ const SellerOnboarding: React.FC = () => {
             <Textarea
               id="description"
               value={formData.description}
-              onChange={(e) => setFormData({...formData, description: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             />
           </div>
 
@@ -239,7 +238,7 @@ const SellerOnboarding: React.FC = () => {
             <Switch
               id="delivery"
               checked={formData.deliveryAvailable}
-              onCheckedChange={(checked) => setFormData({...formData, deliveryAvailable: checked})}
+              onCheckedChange={(checked) => setFormData({ ...formData, deliveryAvailable: checked })}
             />
             <Label htmlFor="delivery">{t.deliveryAvailable}</Label>
           </div>
@@ -253,7 +252,7 @@ const SellerOnboarding: React.FC = () => {
                   type="number"
                   step="0.01"
                   value={formData.deliveryCost}
-                  onChange={(e) => setFormData({...formData, deliveryCost: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, deliveryCost: e.target.value })}
                 />
               </div>
               <div>
@@ -261,7 +260,7 @@ const SellerOnboarding: React.FC = () => {
                 <Input
                   id="deliveryAreas"
                   value={formData.deliveryAreas}
-                  onChange={(e) => setFormData({...formData, deliveryAreas: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, deliveryAreas: e.target.value })}
                   placeholder="Accra, Tema, Kasoa"
                 />
               </div>

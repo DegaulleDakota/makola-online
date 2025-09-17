@@ -66,7 +66,7 @@ export default function RiderRegistration({ onSuccess }: { onSuccess: () => void
 
       toast({
         title: "Registration Successful! 🎉",
-        description: "Welcome to Makola Riders. Complete your onboarding to start earning."
+        description: "Welcome to Everything Market Ghana Riders. Complete your onboarding to start earning."
       });
 
       // Store rider session
@@ -86,7 +86,7 @@ export default function RiderRegistration({ onSuccess }: { onSuccess: () => void
   return (
     <Card className="max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle className="text-2xl text-center">🚴 Become a Makola Rider</CardTitle>
+        <CardTitle className="text-2xl text-center">🚴 Become a Rider — Everything Market Ghana</CardTitle>
         <p className="text-center text-muted-foreground">Start earning with flexible delivery jobs</p>
       </CardHeader>
       <CardContent>
@@ -182,7 +182,7 @@ export default function RiderRegistration({ onSuccess }: { onSuccess: () => void
           </div>
 
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Registering..." : "Join Makola Riders 🚴"}
+            {loading ? "Registering..." : "Join Everything Market Ghana Riders 🚴"}
           </Button>
         </form>
       </CardContent>
