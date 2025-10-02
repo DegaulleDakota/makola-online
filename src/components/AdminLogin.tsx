@@ -1,6 +1,6 @@
 // src/components/AdminLogin.tsx
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,11 +8,9 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { setAdminSession, isAdminAuthed } from "@/admin/auth";
 
-
-
-const ADMIN_SESSION_KEY = "mk_admin_session";
-const BUILD_TAG = "rpc-login-01"; // visible marker so we know this build is live
+const BUILD_TAG = "rpc-login-01";
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("");
@@ -22,10 +20,13 @@ export default function AdminLogin() {
   const [error, setError] = useState<string>("");
 
   const navigate = useNavigate();
+  const location = useLocation();
+  const redirectTo = (location.state as any)?.from || "/admin";
 
   useEffect(() => {
-    // helps confirm which build is running
-    console.log("BUILD:", BUILD_TAG);
+    // If already authed, push straight to admin
+    if (isAdminAuthed()) navigate(redirectTo, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function handleLogin(e: React.FormEvent) {
@@ -35,33 +36,27 @@ export default function AdminLogin() {
 
     try {
       const normalizedEmail = email.trim().toLowerCase();
-      console.log("[ADMIN] submit", { normalizedEmail });
 
-      // IMPORTANT: argument names MUST match the SQL function params
+      // Call the Postgres function (must exist & be granted to anon)
       const { data, error: rpcError } = await supabase.rpc("verify_admin_login", {
         p_email: normalizedEmail,
         p_password: password,
       });
 
-      console.log("[ADMIN] RPC result", { data, rpcError });
-
       if (rpcError) throw rpcError;
 
       const rows: any[] = Array.isArray(data) ? data : data ? [data] : [];
-      if (!rows.length) {
-        throw new Error("Invalid credentials");
-      }
+      if (!rows.length) throw new Error("Invalid credentials");
 
-      // Create admin session used by your guards
-      const session = {
-        email: normalizedEmail,
-        expires: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
-      };
-      localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(session));
+      // Expecting a row with at least { email, role }
+      const row = rows[0] || {};
+      const role = row.role || "super_admin";
 
-      navigate("/admin");
+      // Save ONLY the new keys used by RequireAdmin()
+      setAdminSession(normalizedEmail, role, 24); // 24h expiry
+
+      navigate(redirectTo, { replace: true });
     } catch (err: any) {
-      console.error("[ADMIN] login error", err);
       setError(err?.message ?? "Login failed");
     } finally {
       setLoading(false);
@@ -128,9 +123,7 @@ export default function AdminLogin() {
               {loading ? "Signing in..." : "Login"}
             </Button>
 
-            <p className="text-center text-xs text-gray-400 mt-2">
-              build: {BUILD_TAG}
-            </p>
+            <p className="text-center text-xs text-gray-400 mt-2">build: {BUILD_TAG}</p>
           </form>
         </CardContent>
       </Card>
