@@ -1,3 +1,4 @@
+// src/components/SellerLogin.tsx
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/auth/session";
@@ -9,11 +10,11 @@ import { MessageCircle, ArrowRight } from "lucide-react";
 export default function SellerLogin() {
   const [whatsapp, setWhatsapp] = useState("");
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const auth = useAuth(); // <- now has .login()
   const navigate = useNavigate();
   const location = useLocation();
 
-  const from = location.state?.from || "/seller";
+  const from = (location.state as any)?.from || "/seller";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,10 +22,12 @@ export default function SellerLogin() {
 
     setLoading(true);
     try {
-      await login(whatsapp.trim());
+      console.log("[SellerLogin] submitting:", whatsapp);
+      await auth.login(whatsapp.trim());
       navigate(from, { replace: true });
     } catch (error) {
       console.error("Login failed:", error);
+      alert((error as Error)?.message ?? "Login failed");
     } finally {
       setLoading(false);
     }
@@ -51,29 +54,18 @@ export default function SellerLogin() {
               <Input
                 id="whatsapp"
                 type="tel"
-                placeholder="+1234567890"
+                placeholder="+2335XXXXXXXX"
                 value={whatsapp}
                 onChange={(e) => setWhatsapp(e.target.value)}
                 required
                 className="w-full"
               />
               <p className="text-xs text-gray-500 mt-1">
-                Include country code (e.g., +1 for US, +44 for UK)
+                Use your Ghana number (you can start with 0 or +233).
               </p>
             </div>
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={loading || !whatsapp.trim()}
-            >
-              {loading ? (
-                "Logging in..."
-              ) : (
-                <>
-                  Login to Dashboard
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </>
-              )}
+            <Button type="submit" className="w-full" disabled={loading || !whatsapp.trim()}>
+              {loading ? "Logging in..." : (<><span>Login to Dashboard</span><ArrowRight className="w-4 h-4 ml-2" /></>)}
             </Button>
           </form>
           <div className="mt-6 text-center">

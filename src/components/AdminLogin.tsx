@@ -24,7 +24,6 @@ export default function AdminLogin() {
   const redirectTo = (location.state as any)?.from || "/admin";
 
   useEffect(() => {
-    // If already authed, push straight to admin
     if (isAdminAuthed()) navigate(redirectTo, { replace: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -37,7 +36,6 @@ export default function AdminLogin() {
     try {
       const normalizedEmail = email.trim().toLowerCase();
 
-      // Call the Postgres function (must exist & be granted to anon)
       const { data, error: rpcError } = await supabase.rpc("verify_admin_login", {
         p_email: normalizedEmail,
         p_password: password,
@@ -48,13 +46,10 @@ export default function AdminLogin() {
       const rows: any[] = Array.isArray(data) ? data : data ? [data] : [];
       if (!rows.length) throw new Error("Invalid credentials");
 
-      // Expecting a row with at least { email, role }
       const row = rows[0] || {};
       const role = row.role || "super_admin";
 
-      // Save ONLY the new keys used by RequireAdmin()
-      setAdminSession(normalizedEmail, role, 24); // 24h expiry
-
+      setAdminSession(normalizedEmail, role, 24);
       navigate(redirectTo, { replace: true });
     } catch (err: any) {
       setError(err?.message ?? "Login failed");
@@ -115,11 +110,7 @@ export default function AdminLogin() {
               </button>
             </div>
 
-            <Button
-              type="submit"
-              className="w-full bg-green-600 hover:bg-green-700"
-              disabled={loading}
-            >
+            <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={loading}>
               {loading ? "Signing in..." : "Login"}
             </Button>
 
