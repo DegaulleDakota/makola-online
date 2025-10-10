@@ -12,9 +12,9 @@ import { normalizeGhPhone } from "@/lib/utils";
 import { setSellerSession } from "@/auth/session";
 
 type RpcRow = {
-  id?: string;
-  business_name?: string;
-  whatsapp_number?: string;
+  id: string;
+  business_name: string | null;
+  whatsapp_number: string | null;
 };
 
 export default function SellerLogin() {
@@ -44,7 +44,7 @@ export default function SellerLogin() {
 
     setLoading(true);
     try {
-      // ✅ EXACT match to your SQL function signature and return
+      // ✅ EXACT match to your SQL: verify_seller_login(p_phone text, p_password text)
       const { data, error } = await supabase.rpc("verify_seller_login", {
         p_phone: normalized,
         p_password: password,
@@ -52,19 +52,18 @@ export default function SellerLogin() {
 
       if (error) throw error;
 
-      const rows: RpcRow[] = Array.isArray(data) ? data : data ? [data as RpcRow] : [];
+      const rows: RpcRow[] = Array.isArray(data) ? data : [];
       if (!rows.length) throw new Error("Invalid phone or password.");
 
       const row = rows[0];
-      const sellerId = row.id ?? `local-${normalized}`;
+      const sellerId = row.id; // uuid from DB
       const name = row.business_name ?? "Seller";
       const whatsapp = row.whatsapp_number ?? normalized;
 
       setSellerSession({ sellerId, name, whatsapp });
       navigate(redirectTo, { replace: true });
     } catch (e: any) {
-      const msg = e?.message || "Login failed.";
-      setErr(msg);
+      setErr(e?.message || "Login failed.");
     } finally {
       setLoading(false);
     }
