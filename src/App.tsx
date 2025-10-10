@@ -7,7 +7,7 @@ import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/auth/session";
 import { RequireSeller, RequireAdmin } from "@/auth/guards";
-import AppProvider from "@/contexts/AppContext"; // <-- added
+import { AppProvider } from "@/contexts/AppContext"; // ✅ correct folder name
 
 import GlobalHeader from "./components/GlobalHeader";
 import Index from "./pages/Index";
@@ -18,26 +18,29 @@ import ReturnPolicy from "./pages/ReturnPolicy";
 import HelpCenter from "./pages/HelpCenter";
 import Sell from "./pages/Sell";
 import NotFound from "./pages/NotFound";
+import ServerError from "@/pages/ServerError";
+
 import AdminLogin from "./components/AdminLogin";
 import AdminDashboard from "./components/AdminDashboard";
 import AdminChangePassword from "./components/AdminChangePassword";
-import ServerError from "@/pages/ServerError";
-
 import AdminAnalytics from "./components/AdminAnalytics";
 import AdminNotifications from "./components/AdminNotifications";
 import AdminRiders from "./components/AdminRiders";
 import WhatsAppBotConfig from "./components/WhatsAppBotConfig";
+import AdminPrelaunch from "./components/AdminPrelaunch";
+
 import SellerLogin from "./components/SellerLogin";
+import SellersResetPassword from "./components/SellersResetPassword";
 import SellerLayout from "./components/SellerLayout";
 import SellerDashboard from "./components/SellerDashboard";
 import SellerProfilePage from "./pages/SellerProfilePage";
 import SellerOnboarding from "./components/SellerOnboarding";
+import MyProductsPage from "./components/MyProductsPage";
+
 import RiderRegistration from "./components/RiderRegistration";
 import RiderDashboard from "./components/RiderDashboard";
 import RiderJobs from "./components/RiderJobs";
-import MyProductsPage from "./components/MyProductsPage";
 import RiderLogin from "./components/RiderLogin";
-import AdminPrelaunch from "./components/AdminPrelaunch";
 import Login from "./pages/Login";
 
 const queryClient = new QueryClient();
@@ -68,13 +71,13 @@ const App = () => (
   <ThemeProvider defaultTheme="light">
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <AuthProvider>
-          <AppProvider>
+        <AppProvider>{/* ✅ provides useAppContext() */}
+          <AuthProvider>
             <Toaster />
             <Sonner />
             <BrowserRouter>
               <Routes>
-                {/* Public routes */}
+                {/* Public */}
                 <Route path="/" element={<><GlobalHeader /><Index /></>} />
                 <Route path="/about" element={<><GlobalHeader /><About /></>} />
                 <Route path="/terms" element={<><GlobalHeader /><Terms /></>} />
@@ -83,9 +86,12 @@ const App = () => (
                 <Route path="/help" element={<><GlobalHeader /><HelpCenter /></>} />
                 <Route path="/sell" element={<><GlobalHeader /><Sell /></>} />
 
-                {/* Auth routes */}
+                {/* Generic auth page */}
                 <Route path="/login" element={<Login />} />
+
+                {/* Seller auth */}
                 <Route path="/seller/login" element={<SellerLogin />} />
+                <Route path="/seller/reset-password" element={<SellersResetPassword />} />
                 <Route
                   path="/seller/onboarding"
                   element={
@@ -97,10 +103,12 @@ const App = () => (
                     </>
                   }
                 />
+
+                {/* Admin auth */}
                 <Route path="/admin/login" element={<AdminLogin />} />
                 <Route path="/admin/change-password" element={<AdminChangePasswordPage />} />
 
-                {/* Protected admin routes */}
+                {/* Admin protected */}
                 <Route element={<RequireAdmin />}>
                   <Route path="/admin" element={<AdminDashboard />} />
                   <Route path="/admin/analytics" element={<AdminAnalytics />} />
@@ -110,7 +118,7 @@ const App = () => (
                   <Route path="/admin/prelaunch" element={<AdminPrelaunch />} />
                 </Route>
 
-                {/* Rider routes */}
+                {/* Rider */}
                 <Route path="/rider/register" element={<RiderRegisterPage />} />
                 <Route
                   path="/rider/login"
@@ -146,7 +154,7 @@ const App = () => (
                   }
                 />
 
-                {/* Protected seller routes */}
+                {/* Seller protected */}
                 <Route element={<RequireSeller />}>
                   <Route path="/seller" element={<SellerLayout />}>
                     <Route index element={<SellerDashboard />} />
@@ -155,11 +163,12 @@ const App = () => (
                   </Route>
                 </Route>
 
+                <Route path="/500" element={<ServerError />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
-          </AppProvider>
-        </AuthProvider>
+          </AuthProvider>
+        </AppProvider>
       </TooltipProvider>
     </QueryClientProvider>
   </ThemeProvider>

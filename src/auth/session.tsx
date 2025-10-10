@@ -1,11 +1,24 @@
-// src/auth/session.ts
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { isAdminAuthed, currentAdminEmail } from "@/admin/auth";
 import { normalizeGhPhone } from "@/lib/utils";
 
-/** -------- Seller session (stored in localStorage) -------- */
-type SellerSession = { sellerId: string; name: string; whatsapp: string } | null;
+/** ---- Types ---- */
+export type SellerSession =
+  | {
+      sellerId: string; // e.g. "Local:+2335xxxxx" or "Email:user@example.com"
+      whatsapp?: string; // normalized +233...
+      email?: string;
+      name?: string;
+    }
+  | null;
 
+/** ---- LocalStorage helpers ---- */
 const SELLER_KEY = "mk_current_seller";
 
 function loadSeller(): SellerSession {
@@ -14,31 +27,31 @@ function loadSeller(): SellerSession {
 }
 
 export function setSellerSession(s: SellerSession) {
-  if (s) localStorage.setItem(SELLER_KEY, JSON.stringify(s));
-  else localStorage.removeItem(SELLER_KEY);
-  // notify listeners (guards, header badges, etc.)
+  if (s) {
+    localStorage.setItem(SELLER_KEY, JSON.stringify(s));
+  } else {
+    localStorage.removeItem(SELLER_KEY);
+  }
+  // notify other tabs/components
   window.dispatchEvent(new Event("storage"));
 }
 
-/** -------- Context shape -------- */
+/** ---- Context shape ---- */
 type AuthState = {
   seller: SellerSession;
   isAdmin: boolean;
   adminEmail: string | null;
 
-  /** Clears only seller session */
+  /** Set a seller session using phone or email */
+  login: (identifier: string, opts?: { name?: string }) => Promise<void>;
+
   logoutSeller: () => void;
-
-  /** Forces context to re-read from storage */
   refresh: () => void;
-
-  /** NEW: simple seller “login” by phone (or email if you add later) */
-  login: (identifier: string) => Promise<void>;
 };
 
 const AuthCtx = createContext<AuthState | null>(null);
 
-/** -------- Provider -------- */
+/** ---- Provider ---- */
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [seller, setSeller] = useState<SellerSession>(loadSeller());
   const [isAdm, setIsAdm] = useState<boolean>(isAdminAuthed());
@@ -55,45 +68,49 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     refresh();
   }
 
-  /** Minimal seller login:
-   *  - Normalizes GH phone numbers to +233XXXXXXXXX
-   *  - Saves a lightweight session used by RequireSeller()
-   *  - Later we can verify against DB if needed
-   */
-  async function login(identifier: string) {
+  async function login(identifier: string, opts?: { name?: string }) {
     const raw = (identifier || "").trim();
+    if (!raw) throw new Error("Enter your phone or email");
 
-    // for now we treat everything as phone and normalize
-    const phone = normalizeGhPhone(raw);
-    if (!phone) throw new Error("Enter a valid Ghana phone number");
+    let sess: SellerSession = null;
+    if (raw.includes("@")) {
+      // Email path
+      const email = raw.toLowerCase();
+      sess = {
+        sellerId: `Email:${email}`,
+        email,
+        name: opts?.name,
+      };
+    } else {
+      // Phone path (Ghana)
+      const norm = normalizeGhPhone(raw);
+      if (!norm) throw new Error("Enter a valid Ghana phone number");
+      sess = {
+        sellerId: `Local:${norm}`,
+        whatsapp: norm,
+        name: opts?.name,
+      };
+    }
 
-    const session: SellerSession = {
-      sellerId: `local-${phone}`, // placeholder id for guard usage
-      name: "",
-      whatsapp: phone,
-    };
-
-    setSellerSession(session);
-    refresh();
-
-    // small trace so we can confirm in console
-    console.log("[Auth] seller login ok:", session);
+    setSellerSession(sess);
+    setSeller(sess);
   }
 
+  // keep context in sync across tabs/windows
   useEffect(() => {
     const cb = () => refresh();
     window.addEventListener("storage", cb);
     return () => window.removeEventListener("storage", cb);
   }, []);
 
-  const value = useMemo(
+  const value = useMemo<AuthState>(
     () => ({
       seller,
       isAdmin: isAdm,
       adminEmail: admEmail,
+      login,
       logoutSeller,
       refresh,
-      login,
     }),
     [seller, isAdm, admEmail]
   );
@@ -101,7 +118,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   return <AuthCtx.Provider value={value}>{children}</AuthCtx.Provider>;
 }
 
-/** -------- Hook -------- */
+/** ---- Hook ---- */
 export function useAuth() {
   const ctx = useContext(AuthCtx);
   if (!ctx) throw new Error("useAuth must be used within AuthProvider");
